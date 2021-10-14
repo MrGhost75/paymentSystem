@@ -1,21 +1,20 @@
 package service.factory;
 
 import org.apache.log4j.Logger;
-import service.ICreditCardService;
-import service.IPaymentService;
-import service.IUserService;
-import service.impl.CreditCardService;
-import service.impl.PaymentService;
-import service.impl.UserService;
-
+import service.CreditCardService;
+import service.PaymentService;
+import service.UserService;
+import service.impl.CreditCardServiceImpl;
+import service.impl.PaymentServiceImpl;
+import service.impl.UserServiceImpl;
 
 
 public class ServiceFactory {
     private static final Logger logger = Logger.getLogger(ServiceFactory.class);
 
-    private final IUserService userService = new UserService();
-    private final ICreditCardService creditCardService = new CreditCardService();
-    private final IPaymentService paymentService = new PaymentService();
+    private final UserService userService = new UserServiceImpl();
+    private final CreditCardService creditCardService = new CreditCardServiceImpl();
+    private final PaymentService paymentService = new PaymentServiceImpl();
 
     private static ServiceFactory instance;
 
@@ -31,18 +30,18 @@ public class ServiceFactory {
 
     }
 
-    public IUserService getUserService() {
-        logger.info("Get UserService");
+    public UserService getUserService() {
+        logger.info("Get UserServiceImpl");
         return userService;
     }
 
-    public ICreditCardService getCreditCardService() {
-        logger.info("Get CreditCardService");
+    public CreditCardService getCreditCardService() {
+        logger.info("Get CreditCardServiceImpl");
         return creditCardService;
     }
 
-    public IPaymentService getPaymentService() {
-        logger.info("Get PaymentService");
+    public PaymentService getPaymentService() {
+        logger.info("Get PaymentServiceImpl");
         return paymentService;
     }
 

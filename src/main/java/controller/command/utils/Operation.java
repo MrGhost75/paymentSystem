@@ -7,8 +7,10 @@ public enum Operation {
     LOGOUT("/view/logout"),
 
     ADMIN_MENU("/view/admin/mainPageAdmin"),
+    ADMIN_PROFILE("/view/admin/profileAdmin"),
 
-    CLIENT_MENU("/view/client/mainPageUser");
+    CLIENT_MENU("/view/client/mainPageUser"),
+    CLIENT_PROFILE("/view/client/profileUser");
 
     private final String command;
 

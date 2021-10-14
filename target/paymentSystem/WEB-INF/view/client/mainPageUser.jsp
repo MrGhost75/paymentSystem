@@ -30,12 +30,12 @@
                     EN
                 </a>
             </div>
-            <p id="pageLogo">PaymentSystem</p>
+            <p id="pageLogo">PaymentSystemUser</p>
             <div class="mainmenu">
                 <ul class="topChange">
                     <li><a class="btn"
-                           href="${pageContext.request.contextPath}/view/client/mainPageUser"><fmt:message
-                            key="mainPage"/></a></li>
+                           href="${pageContext.request.contextPath}/view/client/profileUser"><fmt:message
+                            key="profile"/></a></li>
 
                     <li><a class="logOutBtn" href="${pageContext.request.contextPath}/view/logout"><fmt:message
                             key="logout"/></a></li>

@@ -33,15 +33,12 @@ public class AuthorizationFilter implements Filter {
 
         if (loggedIn || loginRequest || signUpRequest) {
             filterChain.doFilter(req, resp);
-
         } else if (req.getRequestURI().equals("/view/registration")) {
             logger.info("Go to registration page");
             CommandUtil.goToPage(req, resp, "/WEB-INF/view/registration.jsp");
-            //req.getRequestDispatcher("/WEB-INF/view/registration.jsp").forward(req, resp);
         } else {
             logger.info("Go to login page");
             CommandUtil.goToPage(req, resp, "/");
-            // req.getRequestDispatcher("/").forward(req, resp);
         }
 
     }

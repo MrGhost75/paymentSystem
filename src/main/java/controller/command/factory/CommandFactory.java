@@ -18,7 +18,9 @@ public class CommandFactory {
         allKnownCommandsMap.put(Operation.REGISTRATION.getCommand(), new RegistrationCommand());
         allKnownCommandsMap.put(Operation.LOGOUT.getCommand(), new LogoutCommand());
         allKnownCommandsMap.put(Operation.ADMIN_MENU.getCommand(), new AdminMenuCommand());
+        allKnownCommandsMap.put(Operation.ADMIN_PROFILE.getCommand(), new AdminProfileCommand());
         allKnownCommandsMap.put(Operation.CLIENT_MENU.getCommand(), new ClientMenuCommand());
+        allKnownCommandsMap.put(Operation.CLIENT_PROFILE.getCommand(), new ClientProfileCommand());
     }
 
     private CommandFactory() {

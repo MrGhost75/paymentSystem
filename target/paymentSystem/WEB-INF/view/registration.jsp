@@ -56,14 +56,14 @@
 
 
                         <input class="btn editProfileBtn" id="loginSubmitBtn" type="submit" value="<fmt:message key="registration"/>">
-                        <c:if test="${requestScope.wrongData}">
+                        <c:if test="${requestScope.invalidData}">
                             <div class="w3-container">
-                                <fmt:message key="incorrectEmailOrPass"/>
+                                <fmt:message key="invalidEmailOrPass"/>
                             </div>
                         </c:if>
                         <c:if test="${requestScope.existUser}">
                             <div class="w3-container">
-                                <p>User already exists</p>
+                                <fmt:message key="userAlreadyExists"/>
                             </div>
                         </c:if>
                     </form>

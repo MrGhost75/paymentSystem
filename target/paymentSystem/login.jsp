@@ -58,12 +58,6 @@
 
                         <c:if test="${requestScope.notFound}">
                             <div class="w3-container">
-                                <fmt:message key="invalidData"/>
-                            </div>
-                        </c:if>
-
-                        <c:if test="${requestScope.wrongData}">
-                            <div class="w3-container">
                                 <fmt:message key="incorrectData"/>
                             </div>
                         </c:if>

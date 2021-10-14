@@ -25,8 +25,12 @@ public enum SQLConstants {
 
     //t_user queries
     SELECT_USER_BY_NAME("SELECT * FROM t_user WHERE name = ?"),
-    SELECT_USER_BY_EMAIL("SELECT * FROM t_user WHERE email = ?");
+    SELECT_USER_BY_EMAIL("SELECT * FROM t_user WHERE email = ?"),
 
+    //t_user_cards queries
+    SELECT_ALL_USER_CARDS("SELECT id, name, pincode, balance, status FROM t_credit_card " +
+                          "JOIN t_user_cards tuc on t_credit_card.id = tuc.card_id " +
+                                  "WHERE user_id = ?");
 
     private final String constant;
 

@@ -38,11 +38,11 @@
         <span class="d hoverColor"></span>
         <div>
             <c:if test="${user.getRole().equals('admin')}">
-            <a href="${pageContext.request.contextPath}/view/admin/mainPageAdmin" >
-                </c:if>
-                <c:if test="${user.getRole().equals('user')}">
+                <a href="${pageContext.request.contextPath}/view/admin/mainPageAdmin" >
+            </c:if>
+            <c:if test="${user.getRole().equals('user')}">
                 <a href="${pageContext.request.contextPath}/view/client/mainPageUser">
-                    </c:if>
+            </c:if>
                     <span class="b"></span>
                     <span class="a"></span>
                     <span class="c"></span>

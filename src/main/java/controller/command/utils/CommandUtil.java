@@ -19,7 +19,7 @@ public abstract class CommandUtil {
 
 
     public static void goToPage(HttpServletRequest req, HttpServletResponse resp, String url) throws IOException {
-        logger.info("go to page start");
+        logger.info("goToPage() has started");
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(url);
 
         logger.info(url);
@@ -32,7 +32,7 @@ public abstract class CommandUtil {
 
     public static String getUserPageByRole(String role) {
         String page = "";
-        logger.info("user by role");
+        logger.info("getUserByRole() has started");
         if (role.equals("admin")) {
             page = "/view/admin/mainPageAdmin";
         } else if (role.equals("user")) {

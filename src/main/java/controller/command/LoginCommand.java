@@ -2,9 +2,10 @@ package controller.command;
 
 import controller.command.utils.CommandUtil;
 import model.entity.User;
+import model.exception.DataBaseException;
 import model.exception.NotFoundUserException;
 import org.apache.log4j.Logger;
-import service.IUserService;
+import service.UserService;
 import service.factory.ServiceFactory;
 
 import javax.naming.NamingException;
@@ -25,7 +26,8 @@ public class LoginCommand implements Command {
         String password = req.getParameter("password");
         if (Objects.nonNull(login) && Objects.nonNull(password)) {
 
-            IUserService userService = factory.getUserService();
+            UserService userService = factory.getUserService();
+
             try {
                 User user = userService.getUserByName(login);
 
@@ -46,8 +48,8 @@ public class LoginCommand implements Command {
             } catch (NotFoundUserException e) {
                 req.setAttribute("notFound", true);
                 CommandUtil.goToPage(req, resp, "/");
-            } catch (NamingException | IOException throwable) {
-                throwable.printStackTrace();
+            } catch (NamingException | DataBaseException throwable) {
+                throw new RuntimeException(throwable);
             }
         }
     }

@@ -5,14 +5,13 @@ import controller.command.utils.DataValidation;
 import model.entity.User;
 import model.exception.*;
 import org.apache.log4j.Logger;
-import service.IUserService;
+import service.UserService;
 import service.factory.ServiceFactory;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 
 public class RegistrationCommand implements Command {
@@ -31,53 +30,43 @@ public class RegistrationCommand implements Command {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        try {
-            if (Objects.isNull(name) || Objects.isNull(email) || Objects.isNull(password)) {
-                logger.info("some fields are empty");
-                throw new WrongDataException();
-            }
-            if (!DataValidation.isEmailValid(email)) {
-                logger.info("email is not valid");
-                throw new WrongDataException();
-            }
-            if (!DataValidation.isPasswordValid(password)) {
-                logger.info("password is not valid");
-                throw new WrongDataException();
-            }
-
-            IUserService userService = factory.getUserService();
-            try {
-                if (Objects.nonNull(userService.getUserByName(name)) ||
-                        Objects.nonNull(userService.getUserByEmail(email))) {
-                    logger.info("user with such name or email already exists");
-                    throw new AlreadyExistUserException();
-                }
-            } catch (NotFoundUserException e) {
-
-                User user = new User.UserBuilderImpl()
-                        .setName(name)
-                        .setEmail(email)
-                        .setPassword(CommandUtil.encrypt(password, false).orElseThrow(PasswordGenerationException::new))
-                        .setRole("user")
-                        .setActivityStatus("active")
-                        .build();
-
-                userService.add(user);
-
-                logger.info("successful registration, redirect to login page");
-                response.sendRedirect("/");
-            }
-        } catch (ServiceException e) {
-            request.setAttribute("notFound", true);
+        if (Objects.isNull(name) || Objects.isNull(email) || Objects.isNull(password)) {
+            logger.warn("Some fields are empty");
             CommandUtil.goToPage(request, response, DEFAULT_PAGE);
-        } catch (WrongDataException e) {
-            request.setAttribute("wrongData", false);
+        }
+
+        try {
+            if (!DataValidation.isEmailValid(email) || !DataValidation.isPasswordValid(password)) {
+                logger.warn("Email is not valid");
+                throw new InvalidDataException();
+            }
+
+            UserService userService = factory.getUserService();
+
+            if (userService.checkIfNameExists(name) ||
+                    userService.checkIfEmailExists(email)) {
+                logger.warn("User with such name or email already exists");
+                throw new AlreadyExistUserException();
+            }
+
+            User user = new User.UserBuilderImpl()
+                    .setName(name)
+                    .setEmail(email)
+                    .setPassword(CommandUtil.encrypt(password, false).orElseThrow(PasswordGenerationException::new))
+                    .setRole("user")
+                    .setActivityStatus("active")
+                    .build();
+            userService.add(user);
+            logger.info("Successful registration, redirect to login page");
+            response.sendRedirect("/");
+        } catch (InvalidDataException e) {
+            request.setAttribute("invalidData", true);
             CommandUtil.goToPage(request, response, DEFAULT_PAGE);
         } catch (AlreadyExistUserException e) {
             request.setAttribute("existUser", true);
             CommandUtil.goToPage(request, response, DEFAULT_PAGE);
-        } catch (PasswordGenerationException | NamingException | SQLException e) {
-            e.printStackTrace();
+        } catch (NamingException | DataBaseException e) {
+            throw new RuntimeException(e);
         }
     }
 }

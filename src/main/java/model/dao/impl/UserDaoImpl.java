@@ -4,16 +4,14 @@ import model.dao.UserDao;
 import model.dao.connection.Connector;
 import model.dao.constants.LogInfo;
 import model.dao.constants.SQLConstants;
+import model.entity.CreditCard;
 import model.entity.User;
-import model.exception.NotFoundUserException;
 import org.apache.log4j.Logger;
 
 import javax.naming.NamingException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 
 public class UserDaoImpl implements UserDao {
@@ -21,11 +19,11 @@ public class UserDaoImpl implements UserDao {
     private static final Logger logger = Logger.getLogger(UserDaoImpl.class);
 
     @Override
-    public boolean add(User entity) throws NamingException, SQLException {
+    public boolean add(User entity) throws NamingException {
         logger.info(LogInfo.ADD + LogInfo.STARTED);
-        Connection connection = Connector.getInstance().getConnection();
-        connection.setAutoCommit(false);
-        try (PreparedStatement statement =
+
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
                      connection.prepareStatement(SQLConstants.INSERT_USER.getConstant())) {
             statement.setString(1, entity.getName());
             statement.setString(2, entity.getEmail());
@@ -33,14 +31,9 @@ public class UserDaoImpl implements UserDao {
             statement.setString(4, entity.getRole());
             statement.setString(5, entity.getActivityStatus());
             statement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
-            logger.info(LogInfo.ADD + LogInfo.ROLLBACK);
-            connection.rollback();
+            logger.error(LogInfo.ADD + LogInfo.FAILED, e.getCause());
             return false;
-        } finally {
-            logger.info(LogInfo.CLOSE_CONNECTION);
-            connection.close();
         }
         logger.info(LogInfo.ADD + LogInfo.SUCCESS);
         return true;
@@ -61,8 +54,8 @@ public class UserDaoImpl implements UserDao {
             if (!users.isEmpty()) {
                 user = users.get(0);
             } else {
-                logger.info("user not found");
-                throw new NotFoundUserException();
+                logger.warn("User by id wasn't found. Returning null");
+                return null;
             }
 
         }
@@ -71,16 +64,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> getAll() throws NamingException {
+    public List<User> getAll() throws NamingException, SQLException {
         logger.info(LogInfo.GET_ALL + LogInfo.STARTED);
         List<User> users;
         try (Connection connection = Connector.getInstance().getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery(SQLConstants.GET_ALL_USERS.getConstant())) {
+            Statement statement = connection.createStatement()) {
+
+            ResultSet rs = statement.executeQuery(SQLConstants.GET_ALL_USERS.getConstant());
             users = initUserList(rs);
-        } catch (SQLException e) {
-            logger.info("method getAll() failed. Returning empty list");
-            return Collections.emptyList();
+
         }
         logger.info(LogInfo.GET_ALL + LogInfo.SUCCESS);
         return users;
@@ -92,15 +84,17 @@ public class UserDaoImpl implements UserDao {
      *
      * @param name - name column in t_user table
      * @return - User object which was generated from found info.
-     * @throws NamingException - in case of having troubles with connection.
+     * @throws NamingException - in case of having troubles with getting connector object using JNDI.
+     * @throws SQLException - in case of having troubles with connecting to database.
      */
     @Override
-    public User getUserByName(String name) throws NamingException {
+    public User getUserByName(String name) throws NamingException, SQLException {
         logger.info(LogInfo.GET_USER_BY_NAME + name + LogInfo.STARTED);
         User user;
+
         try (Connection connection = Connector.getInstance().getConnection();
              PreparedStatement statement =
-                     connection.prepareStatement(SQLConstants.SELECT_USER_BY_NAME.getConstant())) {
+                    connection.prepareStatement(SQLConstants.SELECT_USER_BY_NAME.getConstant())) {
 
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
@@ -109,13 +103,10 @@ public class UserDaoImpl implements UserDao {
             if (!users.isEmpty()) {
                 user = users.get(0);
             } else {
-                logger.info("user not found");
-                throw new NotFoundUserException();
+                logger.warn("User by name wasn't found. Returning null");
+                return null;
             }
 
-        } catch (SQLException e) {
-            logger.info(LogInfo.GET_USER_BY_NAME + name + " failed.");
-            throw new NotFoundUserException();
         }
         logger.info(LogInfo.GET_USER_BY_NAME + name + LogInfo.SUCCESS);
         return user;
@@ -127,10 +118,11 @@ public class UserDaoImpl implements UserDao {
      *
      * @param email - email column in t_user table
      * @return - User object which was generated from found info.
-     * @throws NamingException - in case of having troubles with connection.
+     * @throws NamingException - in case of having troubles with getting connector object using JNDI.
+     * @throws SQLException - in case of having troubles with connecting to database.
      */
     @Override
-    public User getUserByEmail(String email) throws NamingException {
+    public User getUserByEmail(String email) throws NamingException, SQLException {
         logger.info(LogInfo.GET_USER_BY_EMAIL + email + LogInfo.STARTED);
         User user;
         try (Connection connection = Connector.getInstance().getConnection();
@@ -144,24 +136,46 @@ public class UserDaoImpl implements UserDao {
             if (!users.isEmpty()) {
                 user = users.get(0);
             } else {
-                logger.info("user not found");
-                throw new NotFoundUserException();
+                logger.warn("User by email wasn't found. Returning null");
+                return null;
             }
-
-        } catch (SQLException e) {
-            logger.info(LogInfo.GET_USER_BY_EMAIL + email + " failed.");
-            throw new NotFoundUserException();
         }
         logger.info(LogInfo.GET_USER_BY_EMAIL + email + LogInfo.SUCCESS);
         return user;
     }
 
+    /**
+     * Execute SELECT query.
+     * Get all credit cards from t_credit_card table in database paymentsystem
+     * using connection between User's id and his cards' ids in t_user_cards table
+     *
+     * @param user - User object (row in t_user table)
+     * @return - List of Credit Cards which was generated from found info.
+     * @throws NamingException - in case of having troubles with getting connector object using JNDI.
+     * @throws SQLException - in case of having troubles with connecting to database.
+     */
     @Override
-    public boolean updateEntity(User entity) throws NamingException, SQLException{
+    public List<CreditCard> getAllUserCards(User user) throws NamingException, SQLException {
+        logger.info(LogInfo.GET_ALL_USER_CARDS + user.getId() + LogInfo.STARTED);
+        List<CreditCard> creditCards;
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(SQLConstants.SELECT_ALL_USER_CARDS.getConstant())) {
+
+            statement.setLong(1, user.getId());
+            ResultSet resultSet = statement.executeQuery();
+            creditCards = initCreditCardList(resultSet);
+
+        }
+        logger.info(LogInfo.GET_ALL_USER_CARDS + LogInfo.SUCCESS);
+        return creditCards;
+    }
+
+    @Override
+    public boolean updateEntity(User entity) throws NamingException {
         logger.info(LogInfo.UPDATE + entity + LogInfo.STARTED);
-        Connection connection = Connector.getInstance().getConnection();
-        connection.setAutoCommit(false);
-        try (PreparedStatement statement =
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
                      connection.prepareStatement(SQLConstants.UPDATE_USER.getConstant())) {
             statement.setString(1, entity.getName());
             statement.setString(2, entity.getEmail());
@@ -170,37 +184,26 @@ public class UserDaoImpl implements UserDao {
             statement.setString(5, entity.getActivityStatus());
             statement.setLong(6, entity.getId());
             statement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
-            logger.info(LogInfo.UPDATE + entity + LogInfo.ROLLBACK);
-            connection.rollback();
+            logger.error(LogInfo.UPDATE + entity + LogInfo.FAILED, e.getCause());
             return false;
-
-        } finally {
-            logger.info(LogInfo.CLOSE_CONNECTION);
-            connection.close();
         }
         logger.info(LogInfo.UPDATE + entity + LogInfo.SUCCESS);
         return true;
     }
 
     @Override
-    public boolean deleteEntity(Long id) throws NamingException, SQLException {
+    public boolean deleteEntity(Long id) throws NamingException {
         logger.info(LogInfo.DELETE + id + LogInfo.STARTED);
-        Connection connection = Connector.getInstance().getConnection();
-        connection.setAutoCommit(false);
-        try (PreparedStatement statement =
+
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
                      connection.prepareStatement(SQLConstants.DELETE_USER_BY_ID.getConstant())) {
             statement.setLong(1, id);
             statement.executeUpdate();
-            connection.commit();
         } catch (SQLException e) {
-            logger.info(LogInfo.DELETE + id + LogInfo.ROLLBACK);
-            connection.rollback();
+            logger.error(LogInfo.DELETE + id + LogInfo.FAILED, e.getCause());
             return false;
-        } finally {
-            logger.info(LogInfo.CLOSE_CONNECTION);
-            connection.close();
         }
         logger.info(LogInfo.DELETE + id + LogInfo.SUCCESS);
         return true;
@@ -209,7 +212,6 @@ public class UserDaoImpl implements UserDao {
     private List<User> initUserList(ResultSet rs) throws SQLException {
         List<User> users = new ArrayList<>();
         while (rs.next()) {
-
             User user = new User.UserBuilderImpl()
                     .setId(rs.getLong(1))
                     .setName(rs.getString(2))
@@ -218,10 +220,24 @@ public class UserDaoImpl implements UserDao {
                     .setRole(rs.getString(5))
                     .setActivityStatus(rs.getString(6))
                     .build();
-
             users.add(user);
         }
         return users;
+    }
+
+    List<CreditCard> initCreditCardList(ResultSet rs) throws SQLException {
+        List<CreditCard> creditCards  = new ArrayList<>();
+        while (rs.next()) {
+            CreditCard creditCard = new CreditCard.CreditCardBuilderImpl()
+                    .setId(rs.getLong(1))
+                    .setName(rs.getString(2))
+                    .setPincode(rs.getString(3))
+                    .setBalance(rs.getLong(4))
+                    .setActivityStatus(rs.getString(5))
+                    .build();
+            creditCards.add(creditCard);
+        }
+        return creditCards;
     }
 
 }

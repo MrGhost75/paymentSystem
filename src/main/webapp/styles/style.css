@@ -835,6 +835,10 @@ input.tariff1 {
     color: #4dd001;
 }
 
+.blockedStatus {
+    color: #ff1a1f;
+}
+
 .table1 {
     border: none;
     margin: auto;
@@ -1103,4 +1107,28 @@ input.tariff1 {
 
 }
 
+.logoBlock2 {
+    height: 200px;
+    padding-left: 30px;
+    margin: 35px 150px 0 150px;
+    font-size: 26px;
+    color: #313b58;
+    border: 4px solid;
+    border-radius: 5px;
+    background: linear-gradient(to right, #d8d8d8, white);
+    box-shadow: 2px 2px 8px 0 rgb(128 128 128);
+
+}
+
+#profName {
+    margin: 58px 0 0px 0px;
+}
+
+#profEmail {
+    margin: 58px 0 0px 0px;
+}
+
+#profStatus {
+    margin: 58px 0 0px 0px;
+}
 
