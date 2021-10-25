@@ -27,11 +27,28 @@ public enum SQLConstants {
     SELECT_USER_BY_NAME("SELECT * FROM t_user WHERE name = ?"),
     SELECT_USER_BY_EMAIL("SELECT * FROM t_user WHERE email = ?"),
 
+    //t_payment queries
+    SELECT_ID_OF_PAYMENT("SELECT * FROM t_payment WHERE amount = ? AND description = ? AND status = ?"),
+
+    //t_credit_card queries
+    SELECT_CARD_BY_NAME("SELECT * FROM t_credit_card WHERE name = ?"),
+
     //t_user_cards queries
+    INSERT_USER_CARD("INSERT INTO t_user_cards(user_id, card_id) VALUES (?, ?)"),
+
     SELECT_ALL_USER_CARDS("SELECT id, name, pincode, balance, status FROM t_credit_card " +
                           "JOIN t_user_cards tuc on t_credit_card.id = tuc.card_id " +
-                                  "WHERE user_id = ?");
+                                  "WHERE user_id = ?"),
+    SELECT_USER_BY_CARD_ID("SELECT id, name, email, password, role, status FROM t_user " +
+            "LEFT JOIN t_user_cards tuc on t_user.id = tuc.user_id " +
+            "WHERE card_id = ?"),
 
+    //t_user_payments queries
+    INSERT_USER_PAYMENT("INSERT INTO t_user_payments(user_id, payment_id) VALUES (?, ?)"),
+
+    SELECT_ALL_USER_PAYMENTS("SELECT id, amount, date, description, status FROM t_payment " +
+                                  "JOIN t_user_payments tup on t_payment.id = tup.payment_id " +
+                                  "WHERE user_id = ?");
     private final String constant;
 
     public String getConstant() {

@@ -10,7 +10,13 @@ public enum Operation {
     ADMIN_PROFILE("/view/admin/profileAdmin"),
 
     CLIENT_MENU("/view/client/mainPageUser"),
-    CLIENT_PROFILE("/view/client/profileUser");
+    CLIENT_PROFILE("/view/client/profileUser"),
+
+    PAYMENT_MAKING("/view/paymentMaking"),
+    PAYMENT_HISTORY("/view/paymentHistory"),
+
+    ADD_CREDIT_CARD("/view/addingCreditCard"),
+    BALANCE_REPLENISHMENT("/view/balanceReplenishment");
 
     private final String command;
 

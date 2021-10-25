@@ -4,6 +4,7 @@ import model.dao.PaymentDao;
 import model.dao.constants.LogInfo;
 import model.dao.factory.DaoFactory;
 import model.entity.Payment;
+import model.entity.User;
 import model.exception.DataBaseException;
 import org.apache.log4j.Logger;
 import service.PaymentService;
@@ -45,6 +46,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public Long getIdOfPayment(Payment payment) throws NamingException, DataBaseException {
+        try {
+            return paymentDao.getIdOfPayment(payment);
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_ID_OF_PAYMENT + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
     public boolean updateEntity(Payment entity) throws NamingException {
         return paymentDao.updateEntity(entity);
     }
@@ -52,5 +63,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public boolean deleteEntity(Long id) throws NamingException {
         return paymentDao.deleteEntity(id);
+    }
+
+    @Override
+    public String formDescription(User sender, Long senderCardId, User receiver, Long receiverCardId) {
+        return "From " + sender.getName() + " card with id=" + senderCardId
+                + " to " + receiver.getName() + " card with id=" + receiverCardId;
     }
 }

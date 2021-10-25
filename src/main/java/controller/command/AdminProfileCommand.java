@@ -34,7 +34,7 @@ public class AdminProfileCommand implements Command {
             String command = req.getParameter("command");
             String cardId = req.getParameter("Cid");
             if (Objects.nonNull(command)) {
-                Long id = Long.parseLong(cardId);
+                long id = Long.parseLong(cardId);
                 CreditCard card = cardService.getById(id);
                 switch (command) {
                     case "delete":

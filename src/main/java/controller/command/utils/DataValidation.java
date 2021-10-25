@@ -28,4 +28,19 @@ public class DataValidation {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
+    public static boolean isNumber(String email) {
+        final String regex = "^[0-9]+$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    public static boolean isDateValid(String email) {
+        final String regex = "^[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
 }

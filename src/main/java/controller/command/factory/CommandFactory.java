@@ -21,6 +21,10 @@ public class CommandFactory {
         allKnownCommandsMap.put(Operation.ADMIN_PROFILE.getCommand(), new AdminProfileCommand());
         allKnownCommandsMap.put(Operation.CLIENT_MENU.getCommand(), new ClientMenuCommand());
         allKnownCommandsMap.put(Operation.CLIENT_PROFILE.getCommand(), new ClientProfileCommand());
+        allKnownCommandsMap.put(Operation.PAYMENT_MAKING.getCommand(), new PaymentMakingCommand());
+        allKnownCommandsMap.put(Operation.PAYMENT_HISTORY.getCommand(), new PaymentHistoryCommand());
+        allKnownCommandsMap.put(Operation.ADD_CREDIT_CARD.getCommand(), new AddCreditCardCommand());
+        allKnownCommandsMap.put(Operation.BALANCE_REPLENISHMENT.getCommand(), new BalanceReplenishmentCommand());
     }
 
     private CommandFactory() {

@@ -12,6 +12,7 @@ import service.CreditCardService;
 import javax.naming.NamingException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class CreditCardServiceImpl implements CreditCardService {
 
@@ -46,6 +47,16 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @Override
+    public CreditCard getCardByName(String name) throws NamingException, DataBaseException {
+        try {
+            return creditCardDao.getCardByName(name);
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_CARD_BY_NAME + name + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
     public boolean updateEntity(CreditCard entity) throws NamingException {
         return creditCardDao.updateEntity(entity);
     }
@@ -53,6 +64,32 @@ public class CreditCardServiceImpl implements CreditCardService {
     @Override
     public boolean deleteEntity(Long id) throws NamingException {
         return creditCardDao.deleteEntity(id);
+    }
+
+    @Override
+    public boolean checkIfIdExists(Long id) throws NamingException, DataBaseException {
+        try {
+            if (Objects.nonNull(creditCardDao.getById(id))) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_BY_ID + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkIfNameExists(String name) throws NamingException, DataBaseException {
+        try {
+            if (Objects.nonNull(creditCardDao.getCardByName(name))){
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_CARD_BY_NAME + name + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+        return false;
     }
 
 }

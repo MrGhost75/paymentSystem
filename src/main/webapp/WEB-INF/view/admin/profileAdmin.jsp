@@ -20,7 +20,7 @@
 <div class="ournet-inter-area">
     <header id="header" class="header-area">
 
-        <div class="logoBlock2">
+        <div class="logoBlockProfile">
             <div style="font-size: 16px; text-align: end;">
                 <a class="loginBtn"
                    href="${pageContext.request.contextPath}/view/language/admin/profileAdmin?language=RU">
@@ -31,22 +31,16 @@
                     EN
                 </a>
             </div>
-            <p id="pageLogo"><fmt:message key="profile"/></p>
-            <p id="profName"><fmt:message key="placeholderName"/>: ${sessionScope.user.name}</p>
-            <p id="profEmail"><fmt:message key="placeholderEmail"/>: ${sessionScope.user.email}</p>
-            <c:if test="${sessionScope.user.activityStatus.equals('active')}">
-                <p class="activeStatus"><fmt:message key="status"/>: <fmt:message key="activeUser"/></p>
-            </c:if>
-            <c:if test="${sessionScope.user.activityStatus.equals('not_active')}">
-                <p class="blockedStatus"><fmt:message key="status"/>: <fmt:message key="blockedUser"/></p>
-            </c:if>
+            <p style="font-size: 16px; margin-left: 50px"><fmt:message key="profile"/></p>
+            <p style="font-size: 16px; margin-left: 50px;"> <fmt:message key="placeholderName"/>: ${sessionScope.user.name}</p>
+            <p style="font-size: 16px; margin-left: 50px;"><fmt:message key="placeholderEmail"/>: ${sessionScope.user.email}</p>
             <div class="mainmenu">
                 <ul>
                     <li><a class="scroll-animite btn"
-                           href="${pageContext.request.contextPath}/view/admin/paymentMakingAdmin"><fmt:message
+                           href="${pageContext.request.contextPath}/view/paymentMaking"><fmt:message
                             key="paymentMaking"/></a></li>
                     <li><a class="scroll-animite btn"
-                           href="${pageContext.request.contextPath}/view/admin/paymentHistoryAdmin"><fmt:message
+                           href="${pageContext.request.contextPath}/view/paymentHistory"><fmt:message
                             key="paymentHistory"/></a></li>
                     <li><a class="scroll-animite btn"
                            href="${pageContext.request.contextPath}/view/admin/mainPageAdmin"><fmt:message key="backToMain"/></a></li>
@@ -71,7 +65,7 @@
                             <tr>
                                 <th class="sorttable_numeric">id</th>
                                 <th class="sorttable_alpha"><fmt:message key="placeholderName"/></th>
-                                <th class="sorttable_aplha"><fmt:message key="balance"/></th>
+                                <th class="sorttable_numeric"><fmt:message key="balance"/></th>
                                 <th class="sorttable_alpha"><fmt:message key="status"/></th>
                                 <th><fmt:message key="setStatus"/></th>
                                 <th><fmt:message key="delete"/></th>
@@ -116,14 +110,16 @@
                         </table>
                     </div>
                 </div>
-                <ul>
-                    <li><a class="scroll-animite btn"
-                           href="${pageContext.request.contextPath}/view/admin/createCardAdmin"><fmt:message
-                            key="addCard"/></a></li>
-                    <li><a class="scroll-animite btn"
-                           href="${pageContext.request.contextPath}/view/admin/balanceTopUpAdmin"><fmt:message
-                            key="balanceTopUp"/></a></li>
-                </ul>
+                <div class="mainmenu" style="margin: unset; text-align: center">
+                    <ul>
+                        <li><a class="scroll-animite btn"
+                               href="${pageContext.request.contextPath}/view/addingCreditCard"><fmt:message
+                                key="addCard"/></a></li>
+                        <li><a class="scroll-animite btn"
+                               href="${pageContext.request.contextPath}/view/balanceReplenishment"><fmt:message
+                                key="balanceTopUp"/></a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div id="time"><span id="datetime"></span></div>

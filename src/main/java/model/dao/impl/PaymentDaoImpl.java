@@ -77,6 +77,31 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     @Override
+    public Long getIdOfPayment(Payment payment) throws NamingException, SQLException {
+        logger.info(LogInfo.GET_ID_OF_PAYMENT + payment + LogInfo.STARTED);
+        long idOfPayment = 0;
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(SQLConstants.SELECT_ID_OF_PAYMENT.getConstant())) {
+
+            statement.setLong(1, payment.getAmount());
+            statement.setString(2, payment.getDescription());
+            statement.setString(3, payment.getPaymentStatus());
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                if (Math.abs(rs.getTimestamp(3).getTime() - payment.getDate().getTime()) < 2000) {
+                    idOfPayment = rs.getLong(1);
+                }
+            }
+
+        }
+        logger.info(LogInfo.GET_ID_OF_PAYMENT + payment + LogInfo.SUCCESS);
+        return idOfPayment;
+    }
+
+    @Override
     public boolean updateEntity(Payment entity) throws NamingException {
         logger.info(LogInfo.UPDATE + entity + LogInfo.STARTED);
         try (Connection connection = Connector.getInstance().getConnection();
@@ -113,7 +138,7 @@ public class PaymentDaoImpl implements PaymentDao {
         return true;
     }
 
-    List<Payment> initPaymentList(ResultSet rs) throws SQLException {
+    static List<Payment> initPaymentList(ResultSet rs) throws SQLException {
         List<Payment> payments  = new ArrayList<>();
         while (rs.next()) {
 

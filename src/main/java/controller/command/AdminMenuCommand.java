@@ -25,13 +25,14 @@ public class AdminMenuCommand  implements Command {
 
         ServiceFactory factory = ServiceFactory.getInstance();
 
+
         try {
             UserService userService = factory.getUserService();
 
             String command = request.getParameter("command");
             String userId = request.getParameter("Uid");
             if (Objects.nonNull(command)) {
-                Long id = Long.parseLong(userId);
+                long id = Long.parseLong(userId);
                 User user = userService.getById(id);
                 switch (command) {
                     case "delete":

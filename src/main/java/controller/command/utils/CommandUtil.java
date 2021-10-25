@@ -32,11 +32,23 @@ public abstract class CommandUtil {
 
     public static String getUserPageByRole(String role) {
         String page = "";
-        logger.info("getUserByRole() has started");
+        logger.info("getUserPageByRole() has started");
         if (role.equals("admin")) {
             page = "/view/admin/mainPageAdmin";
         } else if (role.equals("user")) {
             page = "/view/client/mainPageUser";
+        }
+        logger.info(page);
+        return page;
+    }
+
+    public static String getUserProfileByRole(String role) {
+        String page = "";
+        logger.info("getUserProfileByRole() has started");
+        if (role.equals("admin")) {
+            page = "/view/admin/profileAdmin";
+        } else if (role.equals("user")) {
+            page = "/view/client/profileUser";
         }
         logger.info(page);
         return page;

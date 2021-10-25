@@ -4,6 +4,7 @@ import model.dao.UserDao;
 import model.dao.constants.LogInfo;
 import model.dao.factory.DaoFactory;
 import model.entity.CreditCard;
+import model.entity.Payment;
 import model.entity.User;
 import model.exception.DataBaseException;
 import org.apache.log4j.Logger;
@@ -26,6 +27,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean add(User entity) throws NamingException {
         return userDao.add(entity);
+    }
+
+    @Override
+    public boolean addPaymentToUser(Long userId, Long paymentId) throws NamingException {
+        return userDao.addPaymentToUser(userId, paymentId);
+    }
+
+    @Override
+    public boolean addCardToUser(Long userId, Long cardId) throws NamingException {
+        return userDao.addCardToUser(userId, cardId);
     }
 
     @Override
@@ -71,9 +82,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByCardId(Long cardId) throws NamingException, DataBaseException {
+        try {
+            return userDao.getUserByCardId(cardId);
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_USER_BY_CARD_ID + cardId + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
     public List<CreditCard> getAllUserCards(User user) throws NamingException, DataBaseException {
         try {
             return userDao.getAllUserCards(user);
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_ALL_USER_CARDS + user.getId() + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
+    public List<Payment> getAllUserPayments(User user) throws NamingException, DataBaseException {
+        try {
+            return userDao.getAllUserPayments(user);
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_ALL_USER_PAYMENTS + user.getId() + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
+    public List<Payment> getAllPaymentsFromBeginToEndTime(User user, Long beginTime, Long endTime) throws NamingException, DataBaseException {
+        try {
+            return userDao.getAllUserPayments(user).stream()
+                    .filter(p -> (p.getDate().getTime() >= beginTime && p.getDate().getTime() <= endTime))
+                    .collect(Collectors.toList());
+        } catch (SQLException e) {
+            logger.error(LogInfo.GET_ALL_USER_CARDS + user.getId() + LogInfo.FAILED, e.getCause());
+            throw new DataBaseException(e);
+        }
+    }
+
+    @Override
+    public List<CreditCard> getAllUserActiveCards(User user) throws NamingException, DataBaseException {
+        try {
+            return userDao.getAllUserCards(user).stream()
+                    .filter(p -> p.getActivityStatus().equals("active"))
+                    .collect(Collectors.toList());
         } catch (SQLException e) {
             logger.error(LogInfo.GET_ALL_USER_CARDS + user.getId() + LogInfo.FAILED, e.getCause());
             throw new DataBaseException(e);

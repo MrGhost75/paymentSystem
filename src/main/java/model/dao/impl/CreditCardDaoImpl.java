@@ -77,6 +77,31 @@ public class CreditCardDaoImpl implements CreditCardDao  {
     }
 
     @Override
+    public CreditCard getCardByName(String name) throws NamingException, SQLException {
+        logger.info(LogInfo.GET_CARD_BY_NAME + name + LogInfo.STARTED);
+        CreditCard card;
+
+        try (Connection connection = Connector.getInstance().getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(SQLConstants.SELECT_CARD_BY_NAME.getConstant())) {
+
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<CreditCard> creditCards = initCreditCardList(resultSet);
+            if (!creditCards.isEmpty()) {
+                card = creditCards.get(0);
+            } else {
+                logger.warn("Card by name wasn't found. Returning null");
+                return null;
+            }
+
+        }
+        logger.info(LogInfo.GET_CARD_BY_NAME + name + LogInfo.SUCCESS);
+        return card;
+    }
+
+    @Override
     public boolean updateEntity(CreditCard entity) throws NamingException{
         logger.info(LogInfo.UPDATE + entity + LogInfo.STARTED);
 
@@ -114,7 +139,7 @@ public class CreditCardDaoImpl implements CreditCardDao  {
         return true;
     }
 
-    List<CreditCard> initCreditCardList(ResultSet rs) throws SQLException {
+    static List<CreditCard> initCreditCardList(ResultSet rs) throws SQLException {
         List<CreditCard> creditCards  = new ArrayList<>();
         while (rs.next()) {
             CreditCard creditCard = new CreditCard.CreditCardBuilderImpl()

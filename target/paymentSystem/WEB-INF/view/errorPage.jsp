@@ -37,10 +37,10 @@
         <span class="n hoverColor"></span>
         <span class="d hoverColor"></span>
         <div>
-            <c:if test="${user.getRole().equals('admin')}">
+            <c:if test="${sessionScope.user.getRole().equals('admin')}">
                 <a href="${pageContext.request.contextPath}/view/admin/mainPageAdmin" >
             </c:if>
-            <c:if test="${user.getRole().equals('user')}">
+            <c:if test="${sessionScope.user.getRole().equals('user')}">
                 <a href="${pageContext.request.contextPath}/view/client/mainPageUser">
             </c:if>
                     <span class="b"></span>
